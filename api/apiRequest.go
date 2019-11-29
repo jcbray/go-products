@@ -16,6 +16,7 @@ type IApiRequest interface {
 
 type Request struct{}
 
+// Configure http client.  Will need increase max idle connections when the tps gets past 1000
 var tr = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, MaxIdleConns: 1000, MaxIdleConnsPerHost: 1000}
 var client = &http.Client{Transport: tr, Timeout: time.Millisecond * 2000}
 
@@ -32,6 +33,7 @@ func isValidStatusCode(status int) bool {
 	return status == http.StatusOK || status == http.StatusCreated || status == http.StatusNoContent
 }
 
+// Get item information from Redsky api
 func (Request) GetItemInfo(id string, item chan Response) {
 	var response Response
 	httpResponse, responseErr := client.Get(generateUrl(id))
