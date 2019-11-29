@@ -37,6 +37,19 @@ func Test_GetFailure(t *testing.T) {
 	assert.NotNil(t, rr.Body)
 }
 
+func Test_GetInvalidInput(t *testing.T) {
+	iProducts = products.Mock{}
+	router := httprouter.New()
+	router.GET("/products/:id", GetProductRequest)
+
+	req, _ := http.NewRequest("GET", "/products/1234g", nil)
+	rr := httptest.NewRecorder()
+
+	router.ServeHTTP(rr, req)
+	assert.Equal(t, rr.Code, http.StatusBadRequest)
+	assert.NotNil(t, rr.Body)
+}
+
 func Test_PutSuccess(t *testing.T) {
 	iProducts = products.Mock{}
 	router := httprouter.New()
@@ -58,6 +71,21 @@ func Test_PutFailure(t *testing.T) {
 	router.PUT("/products/", InsertProductRequest)
 	var product products.Products
 	product.ID = "12346"
+	request, _ := json.Marshal(product)
+	req, _ := http.NewRequest("PUT", "/products/", bytes.NewBuffer(request))
+	rr := httptest.NewRecorder()
+
+	router.ServeHTTP(rr, req)
+	assert.Equal(t, rr.Code, http.StatusBadRequest)
+	assert.NotNil(t, rr.Body)
+}
+
+func Test_PutInvalidInput(t *testing.T) {
+	iProducts = products.Mock{}
+	router := httprouter.New()
+	router.PUT("/products/", InsertProductRequest)
+	var product products.Products
+	product.ID = "12346G"
 	request, _ := json.Marshal(product)
 	req, _ := http.NewRequest("PUT", "/products/", bytes.NewBuffer(request))
 	rr := httptest.NewRecorder()

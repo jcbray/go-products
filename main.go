@@ -7,9 +7,12 @@ import (
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 const SERVER_PORT = ":8080"
+const INSERT_ERROR_CODE = "INSERT_ERROR"
+const GET_ERROR_CODE = "GET_ERROR"
 
 type App struct {
 	Router *httprouter.Router
@@ -37,28 +40,49 @@ func health(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	json.NewEncoder(w).Encode("Up")
 }
 
+func isValidProductRequest(product products.Products) bool {
+	return isValidID(product.ID)
+}
+
+func isValidID(id string) bool {
+	_, err := strconv.ParseFloat(id, 64)
+	return err == nil
+}
+
 func InsertProductRequest(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var product products.Products
 	jsonDecodeErr := json.NewDecoder(r.Body).Decode(&product)
+
 	if jsonDecodeErr != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Error{Message: jsonDecodeErr.Error(), Code: "INSERT_ERROR"})
+		json.NewEncoder(w).Encode(Error{Message: jsonDecodeErr.Error(), Code: INSERT_ERROR_CODE})
+		return
+	}
+	if !isValidProductRequest(product) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(Error{Message: "invalid input", Code: INSERT_ERROR_CODE})
 		return
 	}
 	err := iProducts.Put(product)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Error{Message: err.Error(), Code: "INSERT_ERROR"})
+		json.NewEncoder(w).Encode(Error{Message: err.Error(), Code: INSERT_ERROR_CODE})
 		return
 	}
 	w.WriteHeader(http.StatusOK)
 }
 
 func GetProductRequest(w http.ResponseWriter, _ *http.Request, params httprouter.Params) {
-	product, err := iProducts.Get(params.ByName("id"))
+	id := params.ByName("id")
+	if !isValidID(id) {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(Error{Message: "invalid input", Code: GET_ERROR_CODE})
+		return
+	}
+	product, err := iProducts.Get(id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Error{Message: err.Error(), Code: "GET_ERROR"})
+		json.NewEncoder(w).Encode(Error{Message: err.Error(), Code: GET_ERROR_CODE})
 		return
 	}
 	w.WriteHeader(http.StatusOK)
