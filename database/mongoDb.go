@@ -29,6 +29,7 @@ func (Request) Connect() error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
+	//Connect to locally running database, will need to update to a managed instance when one gets stood up
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://127.0.0.1:27017/"))
 	if err != nil {
 		return fmt.Errorf("todo: couldn't connect to mongo: %v", err)
@@ -52,6 +53,7 @@ func health() bool {
 	return true
 }
 
+// Get price information for given item from database
 func (Request) GetPriceInfo(id string, currentPrice chan CurrentPrice) {
 	if !health() {
 		var result CurrentPrice
@@ -64,6 +66,7 @@ func (Request) GetPriceInfo(id string, currentPrice chan CurrentPrice) {
 	return
 }
 
+// Update or insert price information for given item
 func (Request) PutPriceInfo(price CurrentPrice) error {
 	if !health() {
 		return errors.New(FATEL_PRICE_ERROR + "unable to connect to database")

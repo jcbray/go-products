@@ -16,6 +16,7 @@ type Request struct{}
 var iApiRequest api.IApiRequest = api.Request{}
 var iMongoDb database.IMongoDb = database.Request{}
 
+// Get product information based on the id inputted
 func (Request) Get(id string) (Products, error) {
 	var products Products
 	itemOutputChannel := make(chan api.Response, 100)
@@ -43,6 +44,7 @@ func (Request) Get(id string) (Products, error) {
 	return products, nil
 }
 
+// Update price information
 func (Request) Put(products Products) error {
 	var price database.CurrentPrice
 	price.ID = products.ID

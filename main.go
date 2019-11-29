@@ -27,6 +27,7 @@ func initializeRoutes(a *App) {
 	//a.Router.GET("/products/v1/api-spec", apiSpec)
 }
 
+//ToDo: Add api spec with swagger endpoint to view it
 /*func apiSpec(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Write([]byte(SWAGGER_JSON))
 }*/
@@ -65,8 +66,8 @@ func GetProductRequest(w http.ResponseWriter, _ *http.Request, params httprouter
 	json.NewEncoder(w).Encode(product)
 }
 
-// our main function
 func main() {
+	// Establish connection to database, if unable to connect, fail to start
 	var iMongoDb database.IMongoDb = database.Request{}
 	err := iMongoDb.Connect()
 	if err != nil {

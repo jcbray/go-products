@@ -11,7 +11,7 @@ Aggregate product information from multiple datasources.
 - Start up a locally running mongoDB in Docker by running `sudo docker run -d -p 27017:27017 -v ~/data:/data/db mongo`
 - Within your local go-products repository run `go build` to pull down all dependencies and build the project
 - Once the build is successful run ` ./go-products`
-- Service will start on port 3000
+- Service will start on port 8080
 
 ## Endpoints
 | Name         | Request Type | Endpoint                                   | Request Body                                                  |
