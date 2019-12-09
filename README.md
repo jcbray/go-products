@@ -18,6 +18,6 @@ Aggregate product information from multiple datasources.
 |--------------|--------------|--------------------------------------------|---------------------------------------------------------------|
 | Health       | GET          | http://localhost:8080/products/health      |                                                               |
 | Get Product  | GET          | http://localhost:8080/products/v1/13860423 |                                                               |
-| Update Price | PUT          | http://localhost:8080/products/v1/         | {"current_price": {,"value": 5.00,,"currency_code": "USD",} } |
+| Update Price | PUT          | http://localhost:8080/products/v1/         | {"id": "13860423","current_price": {"value": 5.00,"currency_code": "USD"} } |
 
 
